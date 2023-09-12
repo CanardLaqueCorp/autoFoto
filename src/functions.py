@@ -41,7 +41,9 @@ def crea():
     #we go through every file in the img folder, and we get the id (the name of the file without the extension)
     for filename in os.listdir("img"):
         idAlreadyUsed.append(filename.split(".")[0])
-    print("idAlreadyUsed: " + str(idAlreadyUsed))
+    print("We already have " + str(len(idAlreadyUsed)) + " images", (int(len(idAlreadyUsed))/int(len(data["result"])))*100, "/100 done! of the total")
+
+
     
 
 
@@ -59,9 +61,18 @@ def load(past, id):
     driver.get(url.format(s='photo{}'.format(past.replace(' ','+'))))
     driver.execute_script("window.scrollTo(0,document.body.scrollHeight);")
     time.sleep(3)
-    imgResults = driver.find_elements(By.XPATH,"//img[contains(@class,'Q4LuWd')]")
-    src=imgResults[0].get_attribute('src')
-    urllib.request.urlretrieve(str(src),"img/{}.jpg".format(id))
+
+    try:
+        imgResults = driver.find_elements(By.XPATH,"//img[contains(@class,'Q4LuWd')]")
+        src=imgResults[0].get_attribute('src')
+        urllib.request.urlretrieve(str(src),"img/{}.jpg".format(id))
+    except:
+        #we open the file ../errorId.txt and we write the id of the car that we couldn't find
+        with open("../errorId.txt", "a") as f:
+            f.write(str(id) + "\n")
+        print("Error loading image of " + str(id))
+
+
     return
 
 
