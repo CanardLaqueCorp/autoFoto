@@ -24,22 +24,24 @@ def crea():
     for car in data["result"]:
         brand_model = car["brand"] + " " + car["model"]
         print(brand_model)
-        models.append(brand_model)
+        models.append([brand_model, car["id"]])
     return models
 
-def load(past):
+def load(past, id):
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
-    driver = webdriver.Chrome('chromedriver',chrome_options=chrome_options)
+
+    driver = webdriver.Chrome()
+
     url = ("https://www.google.com/search?q={s}&tbm=isch&tbs=sur%3Afc&hl=en&ved=0CAIQpwVqFwoTCKCa1c6s4-oCFQAAAAAdAAAAABAC&biw=1251&bih=568")
-    driver.get(url.format(s='presentation+{}'.format(past.replace(' ','+'))))
+    driver.get(url.format(s='image{}'.format(past.replace(' ','+'))))
     driver.execute_script("window.scrollTo(0,document.body.scrollHeight);")
-    time.sleep(1)
+    time.sleep(3)
     imgResults = driver.find_elements(By.XPATH,"//img[contains(@class,'Q4LuWd')]")
     src=imgResults[0].get_attribute('src')
-    urllib.request.urlretrieve(str(src),"data/{}.jpg".format(past.replace(' ','_')))
+    urllib.request.urlretrieve(str(src),"img/{}.jpg".format(id))
     return
 
 def findImages():
@@ -47,7 +49,8 @@ def findImages():
     modelToFindPhotos = ['']
     modelToFindPhotos=crea()
     print("we search for images of the models")
-    print(modelToFindPhotos)
     for model in  modelToFindPhotos:
-        load(model)
+        load(model[0], model[1])
     return
+
+
